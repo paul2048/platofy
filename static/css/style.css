@@ -1,0 +1,118 @@
+@-webkit-keyframes iconButtonBouncy {
+  0% {
+    -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+  }
+  5% {
+    -webkit-transform: scale(0.95, 0.9) translate3d(0, 2px, 0);
+            transform: scale(0.95, 0.9) translate3d(0, 2px, 0);
+  }
+  15% {
+    -webkit-transform: scale(1.05, 1.08) translate3d(0, -3px, 0);
+            transform: scale(1.05, 1.08) translate3d(0, -3px, 0);
+  }
+  60% {
+    -webkit-transform: scale(1.08, 1.08) translate3d(0, -4px, 0);
+            transform: scale(1.08, 1.08) translate3d(0, -4px, 0);
+  }
+  90% {
+    -webkit-transform: scale(1.03, 1) translate3d(0, 1px, 0);
+            transform: scale(1.03, 1) translate3d(0, 1px, 0);
+  }
+  100% {
+    -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes iconButtonBouncy {
+  0% {
+    -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+  }
+  5% {
+    -webkit-transform: scale(0.95, 0.9) translate3d(0, 2px, 0);
+            transform: scale(0.95, 0.9) translate3d(0, 2px, 0);
+  }
+  15% {
+    -webkit-transform: scale(1.05, 1.08) translate3d(0, -3px, 0);
+            transform: scale(1.05, 1.08) translate3d(0, -3px, 0);
+  }
+  60% {
+    -webkit-transform: scale(1.08, 1.08) translate3d(0, -4px, 0);
+            transform: scale(1.08, 1.08) translate3d(0, -4px, 0);
+  }
+  90% {
+    -webkit-transform: scale(1.03, 1) translate3d(0, 1px, 0);
+            transform: scale(1.03, 1) translate3d(0, 1px, 0);
+  }
+  100% {
+    -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+  }
+}
+
+body > div {
+  position: relative;
+  min-height: 100vh !important;
+}
+
+main {
+  padding: 80px 0;
+}
+
+.profile_img_link {
+  text-decoration: none !important;
+}
+
+.profile_img_link img {
+  -webkit-transition: .2s;
+  transition: .2s;
+}
+
+.profile_img_link img:hover {
+  opacity: .85;
+}
+
+#topics_list_cont, #login_form, #register_form {
+  width: 100%;
+  max-width: 550px !important;
+}
+
+#topics_list_cont > div {
+  position: static;
+}
+
+#main_cont > * {
+  width: 100%;
+  max-width: 550px !important;
+  margin: 0 auto 15px;
+}
+
+#main_cont > * > * {
+  margin-bottom: 12px;
+}
+
+.upvote_btn, .downvote_btn {
+  padding: 8px;
+  cursor: pointer;
+}
+
+#profile_btn_group {
+  width: 100%;
+}
+
+#footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+@media screen and (min-width: 768px) {
+  #topics_list_cont > div {
+    position: fixed;
+  }
+}
+/*# sourceMappingURL=style.css.map */

@@ -1,0 +1,110 @@
+{% extends "qa/layout.html" %}
+{% load static humanize crispy_forms_tags avatar_tags mathfilters %}
+
+{% block main %}
+    <div>
+        <div class="card bg-light question_card">
+            <div class="card-body">
+                <div class="mb-2">
+                    <a class="profile_img_link" href="{% url 'profile' uid=question.author.id %}">
+                        {% avatar question.author 34 class="rounded-circle img-fluid" %}
+                    </a>
+                    {{ question.author.username }}
+                    <span class="text-muted">asked:</span>
+                </div>
+
+                <h5 class="card-title">{{ question.title }}</h5>            
+                <p class="card-text">{{ question.details }}</p>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted">{{ question.views }} views</div>
+
+                    {% if question.author == user %}
+                        <button class="btn btn-link">Edit</button>
+                    {% endif %}
+
+                    <div>
+                        <a href="#">
+                            <img src="{% static 'images/twitter_icon.svg' %}">
+                        </a>
+                        <a class="ml-3" href="#">
+                            <img src="{% static 'images/facebook_icon.svg' %}">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        {% if question.answers.all %}
+            <h1 class="text-center">Answers</h1>
+        {% else %}
+            <h1 class="text-center text-muted">No answers yet</h1>
+        {% endif %}
+
+        {% for answer in question.answers.all|dictsortreversed:"upvoters.count" %}
+            <div class="card bg-light question_card">
+                <div class="card-body">
+                    <div class="mb-2">
+                        <a class="profile-img-link" href="{% url 'profile' uid=answer.author.id %}">
+                            {% avatar answer.author 34 class="rounded-circle img-fluid" %}
+                        </a>
+                        {{ answer.author.username }}
+                        <span class="text-muted">answered:</span>
+                    </div>
+
+                    <p class="card-title">{{ answer.content }}</p>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="upvote_btn">
+                                <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <g class="icon_svg-stroke icon_svg-fill" stroke-width="1.5" stroke="{% if user in answer.upvoters.all %}var(--blue){% else %}#666{% endif %}" fill="{% if user in answer.upvoters.all %}var(--blue){% else %}none{% endif %}" fill-rule="evenodd" stroke-linejoin="round">
+                                        <polygon points="12 4 3 15 9 15 9 20 15 20 15 15 21 15"></polygon>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            {{ answer.upvoters.count|sub:answer.downvoters.count|intcomma }}
+
+                            <div class="downvote_btn">
+                                <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <g class="icon_svg-stroke icon_svg-fill" stroke="{% if user in answer.downvoters.all %}var(--red){% else %}#666{% endif %}" fill="{% if user in answer.downvoters.all %}var(--red){% else %}none{% endif %}" stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round">
+                                        <polygon transform="translate(12.000000, 12.000000) rotate(-180.000000) translate(-12.000000, -12.000000) " points="12 4 3 15 9 15 9 20 15 20 15 15 21 15"></polygon>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        {% if answer.author == user %}
+                            <button class="btn btn-link">Edit</button>
+                        {% endif %}
+
+                        <div>
+                            <a href="#">
+                                <img src="{% static 'images/twitter_icon.svg' %}">
+                            </a>
+                            <a class="ml-3" href="#">
+                                <img src="{% static 'images/facebook_icon.svg' %}">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div>
+        {% comment %} If the user: is authenticated; isn't the author; didn't answer to the question before {% endcomment %}
+        {% if can_answer %}
+            <form method="POST" action="{% url 'question' question_id=question.id %}">
+                {% csrf_token %}
+                {{ answer_form|crispy }}
+                <button class="btn btn-primary btn-block" type="submit">Answer</button>
+            </form>
+        {% else %}
+            <h4 class="text-center text-muted">You can't answer your own question or a question you already answered to.</h4>
+        {% endif %}
+    </div>
+{% endblock %}

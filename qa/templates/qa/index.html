@@ -1,0 +1,45 @@
+{% extends "qa/layout.html" %}
+{% load static crispy_forms_tags avatar_tags %}
+
+{% block main %}
+    <div class="mb-3">
+        <form id="ask_form" method="POST">
+            <h1 class="pb-3 text-center">Ask your question</h1>
+            {% csrf_token %}
+            {{ ask_form|crispy }}
+            <button class="btn btn-primary btn-block" type="submit">Ask</button>
+        </form>
+    </div>
+    
+    <div>
+        {% for question in questions %}
+            {% comment %} Don't render the questions of the logged in user {% endcomment %}
+            {% if question.author.username != user.username %}
+                <div class="card bg-light question_card">
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <a class="profile_img_link" href="{% url 'profile' uid=question.author.id %}">
+                                {% avatar question.author 34 class="rounded-circle img-fluid" %}
+                            </a>
+                            {{ question.author.username }}
+                            <span class="text-muted">asked:</span>
+                        </div>
+
+                        <a href="{% url 'question' question_id=question.id %}">
+                            <h5 class="card-title">{{ question.title }}</h5>
+                        </a>
+
+                        <p class="card-text">{{ question.details|truncatewords:50 }}</p>
+
+                        {% comment %} If the question has any answers {% endcomment %}
+                        {% if question.answers.all %}
+                            <a href="{% url 'question' question_id=question.id %}" class="btn btn-primary">See answers</a>
+                        {% else %}
+                            <p class="text-muted font-italic">No answers yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}
