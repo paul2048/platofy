@@ -72,8 +72,17 @@ def profile(request, uid):
     """ """
     user = User.objects.get(id=uid)
     questions = Question.objects.filter(author=user)
+    answers = Answer.objects.filter(author=user)
 
-    return render(request, 'qa/profile.html', context={'viewed_user': user, 'questions': questions})
+    return render(
+        request,
+        'qa/profile.html',
+        context={
+            'viewed_user': user,
+            'questions': questions,
+            'answers': answers
+        }
+    )
 
 def question(request, question_id):
     """ """

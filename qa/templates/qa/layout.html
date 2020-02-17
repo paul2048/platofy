@@ -62,12 +62,11 @@
                     <div class="list-group m-auto m-md-0" id="topics_list_cont">
                         <div>
                             {% if user.is_authenticated %}
-                            {% url 'profile' uid=user.id %} <br>
-                            {{ request.path }}
+                                {% url 'profile' uid=user.id %} <br>
+                                {{ request.path }}
                             {% endif %}
-                            <a href="#" class="list-group-item list-group-item-action active">
-                                All
-                            </a>
+                            
+                            <a href="#" class="list-group-item list-group-item-action active">All</a>
                             <a href="#" class="list-group-item list-group-item-action">Computer Science</a>
                             <a href="#" class="list-group-item list-group-item-action">Cars</a>
                             <a href="#" class="list-group-item list-group-item-action">Economy</a>

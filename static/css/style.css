@@ -54,7 +54,6 @@
 
 body {
   position: relative;
-  min-height: 100vh !important;
 }
 
 main {
@@ -74,6 +73,10 @@ main {
   opacity: .85;
 }
 
+#topics_list_cont {
+  margin-bottom: 15px !important;
+}
+
 #topics_list_cont, #login_form, #register_form {
   width: 100%;
   max-width: 550px !important;
@@ -89,7 +92,7 @@ main {
   margin: 0 auto 15px;
 }
 
-#main_cont > * > * {
+.question_card {
   margin-bottom: 12px;
 }
 
@@ -113,6 +116,9 @@ main {
 @media screen and (min-width: 768px) {
   #topics_list_cont > div {
     position: fixed;
+  }
+  #main_cont > * {
+    max-width: 800px !important;
   }
 }
 /*# sourceMappingURL=style.css.map */
