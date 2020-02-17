@@ -17,10 +17,18 @@ class Answer(models.Model):
     def __str__(self):
         return f'{self.content[:200]}'
 
+class Topic(models.Model):
+    name = models.CharField(max_length=32)
+    times_used = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f'{self.name} ({self.times_used})'
+
 class Question(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     title = models.CharField(max_length=256)
     details = models.CharField(max_length=512, blank=True)
+    topics = models.ManyToManyField(Topic)
     question_type = models.CharField(max_length=256, choices=QUESTION_TYPES, default=QUESTION_TYPES[0][0])
     answers = models.ManyToManyField(Answer, blank=True)
     views = models.PositiveIntegerField(default=1)
@@ -32,7 +40,3 @@ class Question(models.Model):
 
     def __str__(self):
         return f'{self.author.username} asked: {self.title}'
-
-class Topic(models.Model):
-    name = models.CharField(max_length=32)
-    times_used = models.PositiveIntegerField(default=0)

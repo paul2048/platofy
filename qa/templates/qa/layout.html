@@ -9,9 +9,11 @@
         <script src={% static "js/jquery-v3.4.1.js" %}></script>
         <script src={% static "js/bootstrap.min.js" %}></script>
         <script src={% static "js/handlebars-v4.4.3.js" %}></script>
+        <script src={% static "js/tagify.min.js" %}></script>
         <script src={% static "js/script.js" %}></script>
 
         <link href={% static "css/bootstrap.min.css" %} rel="stylesheet" type="text/css">
+        <link href={% static "css/tagify.css" %} rel="stylesheet" type="text/css">
         <link href={% static "css/style.css" %} rel="stylesheet" type="text/css">
         <link href={% static "images/favicon.ico" %} rel="shortcut icon" type="image/png">
     </head>
@@ -79,12 +81,10 @@
                     {% endblock %}
                 </div>
             </main>
-
-            <footer id="footer" class="text-center bg-dark text-light">
-                <div class="m-3">
-                    2020 Platofy
-                </div>
-            </footer>
         </div>
+        
+        <footer id="footer" class="text-center bg-dark text-light">
+            <div class="m-3">2020 Platofy</div>
+        </footer>
     </body>
 </html>

@@ -21,7 +21,8 @@ $column_items_width: 550px !important;
   }
 }
 
-body > div {
+// For fixing the footer at the bottom
+body {
   position: relative;
   min-height: 100vh !important;
 }

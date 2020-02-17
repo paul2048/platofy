@@ -4,10 +4,11 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login as login_user, logout as logout_user
 from django.contrib.auth.models import User
 
-from .models import Answer, Question
+from .models import Answer, Question, Topic
 from .forms import LoginForm, RegisterForm, AskQuestionForm, AnswerQuestionForm
 
 import re
+import json
 
 def index(request):
     """ Renders index.html for GET requests and creates questions for POST requests """
@@ -17,12 +18,28 @@ def index(request):
 
         # "request.POST" as argument, fills the form with user input 
         ask_form = AskQuestionForm(request.POST)
-        
+
         if ask_form.is_valid():
             # Get the user that is logged in
             user = User.objects.get(id=request.user.id)
             form_data = ask_form.cleaned_data
-            
+
+            # Convert the string '[{"value":"aaa"},{"value":"bbb"},{"value":"bbb"}]' to {'a', 'b'}
+            topics_names = {x['value'] for x in json.loads(form_data['topics'])}
+            topics = Topic.objects.filter(name__in=topics_names)
+
+            for topic_name in topics_names:
+                # Try to increment the number of times the topic was used 
+                try:
+                    topic = Topic.objects.get(name=topic_name)
+                    topic.times_used += 1
+                    topic.save()
+                # If the selected topic doesn't exist yet
+                except Topic.DoesNotExist:
+                    Topic.objects.create(name=topic_name)
+
+            topics = Topic.objects.filter(name__in=topics_names)
+
             # Create the question submitted by the user
             question = Question.objects.create(
                 author=user,
@@ -31,6 +48,9 @@ def index(request):
                 question_type=form_data['question_type']
             )
             
+            # Link the selected topics to the question
+            question.topics.set(topics)
+
             # Redirect to the question page 
             return HttpResponseRedirect(reverse('question', args=[question.id]))
     # If the request method is GET, use an empty form

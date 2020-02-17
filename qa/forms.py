@@ -2,8 +2,10 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
-# from .models import UserAvatar
 from .utils import QUESTION_TYPES, question_format
+
+import json
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -107,19 +109,29 @@ class RegisterForm(forms.Form):
 class AskQuestionForm(forms.Form):
     title = forms.CharField(max_length=256, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
     details = forms.CharField(max_length=512, required=False, widget=forms.Textarea(attrs={'rows': 5}))
+    topics = forms.CharField()
     question_type = forms.ChoiceField(choices=QUESTION_TYPES)
 
     def clean(self):
         cleaned_data = super(AskQuestionForm, self).clean()
         title = question_format(cleaned_data.get('title'))
+        # Use set for verification because a set will also be used in views.index
+        topics = {x['value'] for x in json.loads(cleaned_data.get('topics'))}
         
-        # If the title of the question doesn't end in a question mark
         if title[-1] != '?':
             self.add_error('title', 'The question must end with a question mark.')
         
-        # If the title has less than 2 words
         if len(title.split(' ')) < 2:
             self.add_error('title', 'The question must have at least 2 words.')
+
+        if len(topics) < 1:
+            self.add_error('topics', 'The question must have at least 1 topic.')
+
+        if len(topics) > 6:
+            self.add_error('topics', 'The question must have a maximum of 6 topics.')
+
+        if len(''. join(topics)) > 64:
+            self.add_error('topics', f'Ensure this value has at most 64 characters (it has {len("". join(topics))})')
 
         # Always return a value to use as the new cleaned data, even if
         # this method didn't change it.
