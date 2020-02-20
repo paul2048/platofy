@@ -53,6 +53,7 @@
 }
 
 body {
+  min-height: 100vh;
   position: relative;
 }
 
@@ -86,6 +87,14 @@ main {
   position: static;
 }
 
+tags.form-control {
+  height: auto !important;
+}
+
+tag {
+  text-transform: uppercase;
+}
+
 #main_cont > * {
   width: 100%;
   max-width: 550px !important;
@@ -99,6 +108,11 @@ main {
 .upvote_btn, .downvote_btn {
   padding: 8px;
   cursor: pointer;
+}
+
+#question_topics {
+  border: none !important;
+  cursor: default;
 }
 
 #profile_btn_group {
@@ -115,10 +129,11 @@ main {
 
 @media screen and (min-width: 768px) {
   #topics_list_cont > div {
+    width: 240px;
     position: fixed;
   }
   #main_cont > * {
-    max-width: 800px !important;
+    max-width: 100% !important;
   }
 }
 /*# sourceMappingURL=style.css.map */

@@ -1,14 +1,14 @@
-from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth import authenticate, login as login_user, logout as logout_user
 from django.contrib.auth.models import User
 
-from .models import Answer, Question, Topic
 from .forms import LoginForm, RegisterForm, AskQuestionForm, AnswerQuestionForm
+from .models import Answer, Question, Topic
 
-import re
 import json
+import re
 
 def index(request):
     """ Renders index.html for GET requests and creates questions for POST requests """
@@ -24,8 +24,8 @@ def index(request):
             user = User.objects.get(id=request.user.id)
             form_data = ask_form.cleaned_data
 
-            # Convert the string '[{"value":"aaa"},{"value":"bbb"},{"value":"bbb"}]' to {'a', 'b'}
-            topics_names = {x['value'] for x in json.loads(form_data['topics'])}
+            # Convert the string '[{"value":"a"},{"value":"B"},{"value":"b"}]' to {'A', 'B'}
+            topics_names = {x['value'].upper() for x in json.loads(form_data['topics'])}
             topics = Topic.objects.filter(name__in=topics_names)
 
             for topic_name in topics_names:
@@ -126,7 +126,6 @@ def question(request, question_id):
             'answer_form': answer_form
         }
     )
-
 
 def login(request):
     """ Logs the user in """

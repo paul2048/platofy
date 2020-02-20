@@ -20,7 +20,7 @@
     
     <body>
         <div class="container-lg">
-            <nav class="navbar fixed-top navbar-expand-md navbar-light bg-light">
+            <nav class="navbar fixed-top navbar-expand-sm navbar-light bg-light">
                 <div class="container-lg">
                     <a class="navbar-brand" href="{% url 'index' %}">Platofy</a>
 
@@ -47,7 +47,7 @@
                                     {% avatar user 38 class="rounded-circle img-fluid" %}
                                 </a>
                                 {% comment %} Logout {% endcomment %}
-                                <form class="ml-auto ml-md-2" method="POST" action="{% url 'logout' %}">
+                                <form class="ml-auto ml-sm-2" method="POST" action="{% url 'logout' %}">
                                     {% csrf_token %}
                                     <button class="btn btn-outline-danger">Log Out</button>
                                 </form>
@@ -59,18 +59,12 @@
 
             <main class="row">
                 <div class="col-12 col-md-4">
-                    <div class="list-group m-auto m-md-0" id="topics_list_cont">
+                    <div class="list-group m-auto" id="topics_list_cont">
                         <div>
-                            {% if user.is_authenticated %}
-                                {% url 'profile' uid=user.id %} <br>
-                                {{ request.path }}
-                            {% endif %}
-                            
-                            <a href="#" class="list-group-item list-group-item-action active">All</a>
-                            <a href="#" class="list-group-item list-group-item-action">Computer Science</a>
-                            <a href="#" class="list-group-item list-group-item-action">Cars</a>
-                            <a href="#" class="list-group-item list-group-item-action">Economy</a>
-                            <a href="#" class="list-group-item list-group-item-action">11111wwwwwaaaaawwwww</a>
+                            <a href="#" class="list-group-item list-group-item-action active">ALL</a>
+                            {% for topic in top_topics %}
+                                <a href="#" class="list-group-item list-group-item-action">{{ topic.name }}</a>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

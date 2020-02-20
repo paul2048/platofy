@@ -23,6 +23,7 @@ $column_items_width: 550px !important;
 
 // For fixing the footer at the bottom
 body {
+  min-height: 100vh;
   position: relative;
 }
 
@@ -52,9 +53,18 @@ main {
   max-width: $column_items_width;
 }
 
-// When the screen is smaller, don't make the topics list fixed
 #topics_list_cont > div {
+  // When the screen is smaller, don't make the topics list fixed
   position: static;
+}
+
+// Fixes the topics overflow when a row of topics is filled
+tags.form-control {
+  height: auto !important;
+}
+
+tag {
+  text-transform: uppercase;
 }
 
 // Every direct element in the second column 
@@ -73,6 +83,11 @@ main {
   cursor: pointer;
 }
 
+#question_topics {
+  border: none !important;
+  cursor: default;
+}
+
 #profile_btn_group {
   width: 100%;
 }
@@ -89,10 +104,11 @@ main {
 @media screen and (min-width: 768px) {
   // Make the topics list in the left fixed
   #topics_list_cont > div {
+    width: 240px;
     position: fixed;
   }
 
   #main_cont > * {
-    max-width: 800px !important;
+    max-width: 100% !important;
   }
 }
