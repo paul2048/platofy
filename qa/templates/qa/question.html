@@ -2,6 +2,10 @@
 {% load static humanize crispy_forms_tags avatar_tags mathfilters %}
 
 {% block main %}
+    <script>
+        sessionStorage.setItem('user_id', {{ user.id }});
+    </script>
+
     <div>
         <div class="card bg-light question_card">
             <div class="card-body">
@@ -16,30 +20,24 @@
                 <h5 class="card-title">{{ question.title }}</h5>            
                 <p class="card-text">{{ question.details }}</p>
                 
-                <div class="tagify" id="question_topics">
+                <div class="tagify mb-2" id="question_topics">
                     {% for topic in question.topics.all %}
-                        <div class="tagify__tag ">
-                            <div>
-                                <span>{{ topic.name }}</span>
+                        <a href="{% url 'index' %}">
+                            <div class="tagify__tag ">
+                                <div>
+                                    <span>{{ topic.name }}</span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     {% endfor %}
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="text-muted">{{ question.views }} views</div>
 
-                    {% if question.author == user %}
-                        <button class="btn btn-link">Edit</button>
-                    {% endif %}
-
-                    <div>
-                        <a href="#">
-                            <img src="{% static 'images/twitter_icon.svg' %}">
-                        </a>
-                        <a class="ml-3" href="#">
-                            <img src="{% static 'images/facebook_icon.svg' %}">
-                        </a>
+                    <div class="share_cont">
+                        <a href="#"><img src="{% static 'images/twitter_icon.svg' %}"></a>
+                        <a class="ml-3" href="#"><img src="{% static 'images/facebook_icon.svg' %}"></a>
                     </div>
                 </div>
             </div>
@@ -54,12 +52,10 @@
         {% endif %}
 
         {% for answer in question.answers.all|dictsortreversed:"upvoters.count" %}
-            <div class="card bg-light question_card">
+            <div class="card bg-light question_card" data-id="{{ answer.id }}">
                 <div class="card-body">
                     <div class="mb-2">
-                        <a class="profile-img-link" href="{% url 'profile' uid=answer.author.id %}">
-                            {% avatar answer.author 34 class="rounded-circle img-fluid" %}
-                        </a>
+                        <a class="profile_img_link" href="{% url 'profile' uid=answer.author.id %}">{% avatar answer.author 34 class="rounded-circle img-fluid" %}</a>
                         {{ answer.author.username }}
                         <span class="text-muted">answered:</span>
                     </div>
@@ -67,37 +63,31 @@
                     <p class="card-title">{{ answer.content }}</p>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center">
-                            <div class="upvote_btn">
+                        <div class="d-flex align-items-center" data-csrftoken="{{ csrf_token }}">
+                            <div class="upvote_btn {% if user in answer.upvoters.all %}active_vote{% endif %}">
                                 <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                    <g class="icon_svg-stroke icon_svg-fill" stroke-width="1.5" stroke="{% if user in answer.upvoters.all %}var(--blue){% else %}#666{% endif %}" fill="{% if user in answer.upvoters.all %}var(--blue){% else %}none{% endif %}" fill-rule="evenodd" stroke-linejoin="round">
+                                    <g stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round">
                                         <polygon points="12 4 3 15 9 15 9 20 15 20 15 15 21 15"></polygon>
                                     </g>
                                 </svg>
                             </div>
 
-                            {{ answer.upvoters.count|sub:answer.downvoters.count|intcomma }}
+                            <span class="points">
+                                {{ answer.upvoters.count|sub:answer.downvoters.count|intcomma }}
+                            </span>
 
-                            <div class="downvote_btn">
+                            <div class="downvote_btn {% if user in answer.downvoters.all %}active_vote{% endif %}">
                                 <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                    <g class="icon_svg-stroke icon_svg-fill" stroke="{% if user in answer.downvoters.all %}var(--red){% else %}#666{% endif %}" fill="{% if user in answer.downvoters.all %}var(--red){% else %}none{% endif %}" stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round">
+                                    <g stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round">
                                         <polygon transform="translate(12.000000, 12.000000) rotate(-180.000000) translate(-12.000000, -12.000000) " points="12 4 3 15 9 15 9 20 15 20 15 15 21 15"></polygon>
                                     </g>
                                 </svg>
                             </div>
                         </div>
-                        
-                        {% if answer.author == user %}
-                            <button class="btn btn-link">Edit</button>
-                        {% endif %}
 
-                        <div>
-                            <a href="#">
-                                <img src="{% static 'images/twitter_icon.svg' %}">
-                            </a>
-                            <a class="ml-3" href="#">
-                                <img src="{% static 'images/facebook_icon.svg' %}">
-                            </a>
+                        <div class="share_cont">
+                            <a href="#"><img src="{% static 'images/twitter_icon.svg' %}"></a>
+                            <a class="ml-3" href="#"><img src="{% static 'images/facebook_icon.svg' %}"></a>
                         </div>
                     </div>
                 </div>

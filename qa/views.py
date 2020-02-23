@@ -1,8 +1,9 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import reverse
 from django.contrib.auth import authenticate, login as login_user, logout as logout_user
 from django.contrib.auth.models import User
+from django.db.models import Count
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import render
+from django.urls import reverse
 
 from .forms import LoginForm, RegisterForm, AskQuestionForm, AnswerQuestionForm
 from .models import Answer, Question, Topic
@@ -56,8 +57,21 @@ def index(request):
     # If the request method is GET, use an empty form
     else:
         ask_form = AskQuestionForm()
+    
+    # Get the every questions except for those asked by the user
+    questions = Question.objects.exclude(author=request.user)
+    # Get the name of the topic from the URL's query string
+    topic_name = request.GET.get("topic")
 
-    questions = Question.objects.all()
+    # If the user provided a "topic_name" URL query string
+    if topic_name:
+        try:
+            topic = Topic.objects.get(name=topic_name.upper())
+        except Topic.DoesNotExist:
+            topic = None
+
+        # Get every question with the specified topic
+        questions = questions.filter(topics=topic)
 
     return render(
         request,
@@ -69,10 +83,12 @@ def index(request):
     )
 
 def profile(request, uid):
-    """ """
+    """ Renders the a specified user's profile """
     user = User.objects.get(id=uid)
     questions = Question.objects.filter(author=user)
     answers = Answer.objects.filter(author=user)
+    upvotes_received = answers.aggregate(Count('upvoters'))['upvoters__count']
+    upvotes_given = Answer.objects.filter(upvoters=user).count()
 
     return render(
         request,
@@ -80,12 +96,14 @@ def profile(request, uid):
         context={
             'viewed_user': user,
             'questions': questions,
-            'answers': answers
+            'answers': answers,
+            'upvotes_received': upvotes_received,
+            'upvotes_given': upvotes_given
         }
     )
 
 def question(request, question_id):
-    """ """
+    """ Renders question pages and handles question answerings """
     question = Question.objects.get(id=question_id)
     answer_form = AnswerQuestionForm()
     answers_authors = [answer.author for answer in question.answers.all()]
@@ -126,6 +144,37 @@ def question(request, question_id):
             'answer_form': answer_form
         }
     )
+
+def vote(request):
+    """ Answer upvote and downvote feature """
+    uid = request.POST.get('user_id')
+    answer_id = request.POST.get('answer_id')
+    vote_type = request.POST.get('vote_type')
+    user = User.objects.get(id=uid)
+    answer = Answer.objects.get(id=answer_id)
+    upvoters = answer.upvoters
+    downvoters = answer.downvoters
+
+    if vote_type == 'upvote':
+        # If the user is already a upvoter, remove the upvote
+        if user.id in upvoters.values_list('id', flat=True):
+            upvoters.remove(user)
+        # Else, remove the downvote (if the user is a downvoter), and add an upvote
+        else:
+            downvoters.remove(user)
+            upvoters.add(user)
+    else:
+        # If the use is already a downvoter, remove the downvote
+        if user.id in downvoters.values_list('id', flat=True):
+            downvoters.remove(user)
+        # Else, remove the upvote (if the user is an upvoter), and add a downvote
+        else:
+            upvoters.remove(user)
+            downvoters.add(user)
+
+    return HttpResponse(json.dumps({
+        'new_points': upvoters.count() - downvoters.count()
+    }))
 
 def login(request):
     """ Logs the user in """

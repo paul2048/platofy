@@ -2,6 +2,25 @@
 {% load static humanize crispy_forms_tags avatar_tags mathfilters %}
 
 {% block main %}
+    <div class="row">
+        <div class="col-12 col-sm-6 text-center">
+            {% avatar viewed_user 256 class="rounded-circle img-fluid" %}
+        </div>
+
+        <div class="col-12 col-sm-6 m-auto" id="stats_cont">
+            <div class="row">
+                <div class="col-9 text-muted">Answers made</div>
+                <div class="col-3 text-right">{{ answers.count }}</div>
+                <div class="col-9 text-muted">Questions asked</div>
+                <div class="col-3 text-right">{{ questions.count }}</div>
+                <div class="col-9 text-muted">Upvotes received</div>
+                <div class="col-3 text-right">{{ upvotes_received }}</div>
+                <div class="col-9 text-muted">Upvotes given</div>
+                <div class="col-3 text-right">{{ upvotes_given }}</div>
+            </div>
+        </div>
+    </div>
+
     <div>
         <div class="btn-group" id="profile_btn_group">
             <button class="btn btn-secondary active" id="my_questions_btn">Questions</button>
@@ -20,16 +39,14 @@
                 <div class="card bg-light question_card">
                     <div class="card-body">
                         <div class="mb-2">
-                            <a class="profile_img_link" href="{% url 'profile' uid=question.author.id %}">
-                                {% avatar question.author 34 class="rounded-circle img-fluid" %}
-                            </a>
+                            <a class="profile_img_link" href="{% url 'profile' uid=question.author.id %}">{% avatar question.author 34 class="rounded-circle img-fluid" %}</a>
                             {{ question.author.username }}
                             <span class="text-muted">asked:</span>
                         </div>
 
-                        <a href="{% url 'question' question_id=question.id %}">
-                            <h5 class="card-title">{{ question.title }}</h5>
-                        </a>
+                        <h5 class="card-title">
+                            <a href="{% url 'question' question_id=question.id %}">{{ question.title }}</a>
+                        </h5>
 
                         <p class="card-text">{{ question.details|truncatewords:50 }}</p>
 
@@ -50,9 +67,7 @@
                 <div class="card bg-light question_card">
                     <div class="card-body">
                         <div class="mb-2">
-                            <a class="profile-img-link" href="{% url 'profile' uid=answer.author.id %}">
-                                {% avatar answer.author 34 class="rounded-circle img-fluid" %}
-                            </a>
+                            <a class="profile_img_link" href="{% url 'profile' uid=answer.author.id %}">{% avatar answer.author 34 class="rounded-circle img-fluid" %}</a>
                             {{ answer.author.username }}
                             <span class="text-muted">answered:</span>
                         </div>

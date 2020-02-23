@@ -13,33 +13,32 @@
     
     <div>
         {% for question in questions %}
-            {% comment %} Don't render the questions of the logged in user {% endcomment %}
-            {% if question.author.username != user.username %}
-                <div class="card bg-light question_card">
-                    <div class="card-body">
-                        <div class="mb-2">
-                            <a class="profile_img_link" href="{% url 'profile' uid=question.author.id %}">
-                                {% avatar question.author 34 class="rounded-circle img-fluid" %}
-                            </a>
-                            {{ question.author.username }}
-                            <span class="text-muted">asked:</span>
-                        </div>
-
-                        <a href="{% url 'question' question_id=question.id %}">
-                            <h5 class="card-title">{{ question.title }}</h5>
+            <div class="card bg-light question_card">
+                <div class="card-body">
+                    <div class="mb-2">
+                        <a class="profile_img_link" href="{% url 'profile' uid=question.author.id %}">
+                            {% avatar question.author 34 class="rounded-circle img-fluid" %}
                         </a>
-
-                        <p class="card-text">{{ question.details|truncatewords:50 }}</p>
-
-                        {% comment %} If the question has any answers {% endcomment %}
-                        {% if question.answers.all %}
-                            <a href="{% url 'question' question_id=question.id %}" class="btn btn-primary">See answers</a>
-                        {% else %}
-                            <p class="text-muted font-italic">No answers yet.</p>
-                        {% endif %}
+                        {{ question.author.username }}
+                        <span class="text-muted">asked:</span>
                     </div>
+
+                    <h5 class="card-title">
+                        <a href="{% url 'question' question_id=question.id %}">{{ question.title }}</a>
+                    </h5>
+
+                    <p class="card-text">{{ question.details|truncatewords:50 }}</p>
+
+                    {% comment %} If the question has any answers {% endcomment %}
+                    {% if question.answers.all %}
+                        <a href="{% url 'question' question_id=question.id %}" class="btn btn-primary">See answers</a>
+                    {% else %}
+                        <p class="text-muted font-italic">No answers yet.</p>
+                    {% endif %}
                 </div>
-            {% endif %}
+            </div>
+        {% empty %}
+            <h1 class="pt-2 text-muted text-center">No questions with this topic.<h1>
         {% endfor %}
     </div>
 {% endblock %}

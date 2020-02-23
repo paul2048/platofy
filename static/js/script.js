@@ -5,11 +5,44 @@ window.onload = () => {
         $('[name=topics]').tagify({
             whitelist: $.map(topics, (x) => x.name), // Make a list with the names of the topics
             dropdown: {
-                classname: "color-red",
+                classname: 'color-red',
                 enabled: 0, // Show the dropdown immediately on focus
                 maxItems: 5,
-                position: "text", // Place the dropdown near the typed text
+                position: 'text', // Place the dropdown near the typed text
                 closeOnSelect: false, // Keep the dropdown open after selecting a suggestion
+            }
+        });
+    });
+
+    // When a upvote or downvote button is clicked
+    $('.upvote_btn, .downvote_btn').click((e) => {
+        const btn = $(e.target).closest('.upvote_btn, .downvote_btn');
+        const csrf_token = btn.closest('div[data-csrftoken]').data('csrftoken');
+        const user_id = sessionStorage.getItem('user_id');
+        const answer_id = btn.closest('[data-id]').data('id');
+        const vote_type = btn.hasClass('upvote_btn') ? 'upvote' : 'downvote';
+        const data_to_send = {
+            csrfmiddlewaretoken: csrf_token,
+            user_id: user_id,
+            answer_id: answer_id,
+            vote_type: vote_type
+        }
+        btn.removeClass('upvoted');
+
+        $.post('/vote/', data_to_send, (resp) => {
+            resp = JSON.parse(resp);
+            const btns_cont = btn.parent();
+
+            // Update the new number of points
+            btns_cont.find('.points').text(resp.new_points);
+
+            // Color/Uncolor the correct button
+            btn.toggleClass('active_vote');
+            btn.siblings('div').removeClass('active_vote');
+
+            // Upvote animation
+            if (vote_type == 'upvote' && btn.hasClass('active_vote')) {
+                btn.addClass('upvoted');
             }
         });
     });
