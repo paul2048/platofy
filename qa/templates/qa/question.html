@@ -7,7 +7,7 @@
     </script>
 
     <div>
-        <div class="card bg-light question_card">
+        <div class="card bg-light qa_card">
             <div class="card-body">
                 <div class="mb-2">
                     <a class="profile_img_link" href="{% url 'profile' uid=question.author.id %}">
@@ -52,7 +52,7 @@
         {% endif %}
 
         {% for answer in question.answers.all|dictsortreversed:"upvoters.count" %}
-            <div class="card bg-light question_card" data-id="{{ answer.id }}">
+            <div class="card bg-light qa_card" data-id="{{ answer.id }}">
                 <div class="card-body">
                     <div class="mb-2">
                         <a class="profile_img_link" href="{% url 'profile' uid=answer.author.id %}">{% avatar answer.author 34 class="rounded-circle img-fluid" %}</a>
