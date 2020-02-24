@@ -24,7 +24,7 @@
                 <div class="container-lg">
                     <a class="navbar-brand" href="{% url 'index' %}">Platofy</a>
 
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar_right_side" aria-controls="navbar_right_side" aria-expanded="false" aria-label="Toggle navigation">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar_right_side" aria-controls="navbar_right_side">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     
@@ -61,10 +61,18 @@
                 <div class="col-12 col-md-4">
                     <div class="list-group m-auto" id="topics_list_cont">
                         <div>
-                            <a href="{% url 'index' %}" class="list-group-item list-group-item-action active">ALL</a>
-                            {% for topic in top_topics %}
-                                <a href="{% url 'index' %}?topic={{ topic.name }}" class="list-group-item list-group-item-action">{{ topic.name }}</a>
-                            {% endfor %}
+                            {% with clicked_topic=request.GET.topic %}
+                                <a href="{% url 'index' %}" 
+                                   class="list-group-item list-group-item-action {% if clicked_topic not in top_topics %}active{% endif %}">
+                                    ALL
+                                </a>
+                                {% for topic in top_topics %}
+                                    <a href="{% url 'index' %}?topic={{ topic }}"
+                                       class="list-group-item list-group-item-action {% if clicked_topic == topic %}active{% endif %}">
+                                        {{ topic }}
+                                    </a>
+                                {% endfor %}
+                            {% endwith %}
                         </div>
                     </div>
                 </div>

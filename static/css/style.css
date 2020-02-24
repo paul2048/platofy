@@ -145,6 +145,12 @@ tag {
 
 .qa_card {
   margin-bottom: 12px;
+  -webkit-transition: .2s;
+  transition: .2s;
+}
+
+.qa_card:hover {
+  background: #e9e9e9 !important;
 }
 
 .card-title > a {
