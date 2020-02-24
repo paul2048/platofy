@@ -10,10 +10,17 @@
         <div class="card bg-light qa_card">
             <div class="card-body">
                 <div class="mb-2">
-                    <a class="profile_img_link" href="{% url 'profile' uid=question.author.id %}">
-                        {% avatar question.author 34 class="rounded-circle img-fluid" %}
-                    </a>
-                    {{ question.author.username }}
+                    {% if question.type == 'anonymous' %}
+                        <a class="profile_img_link">
+                            <img src="{% static 'images/anonymous.jpg' %}" width="34" height="34" class="rounded-circle img-fluid">
+                        </a>
+                        Anonymous
+                    {% else %}
+                        <a class="profile_img_link" href="{% url 'profile' uid=question.author.id %}">
+                            {% avatar question.author 34 class="rounded-circle img-fluid" %}
+                        </a>
+                        {{ question.author.username }}
+                    {% endif %}
                     <span class="text-muted">asked:</span>
                 </div>
 

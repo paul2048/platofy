@@ -87,6 +87,8 @@ def profile(request, uid):
     user = User.objects.get(id=uid)
     questions = Question.objects.filter(author=user)
     answers = Answer.objects.filter(author=user)
+    # Questions asked, excluing the anonymous questions
+    public_questions = questions.filter(type='public')
     upvotes_received = answers.aggregate(Count('upvoters'))['upvoters__count']
     upvotes_given = Answer.objects.filter(upvoters=user).count()
 
@@ -97,6 +99,7 @@ def profile(request, uid):
             'viewed_user': user,
             'questions': questions,
             'answers': answers,
+            'public_questions': public_questions,
             'upvotes_received': upvotes_received,
             'upvotes_given': upvotes_given
         }

@@ -63,7 +63,7 @@
                         <div>
                             <a href="{% url 'index' %}" class="list-group-item list-group-item-action active">ALL</a>
                             {% for topic in top_topics %}
-                                <a href="{% url 'index' %}" class="list-group-item list-group-item-action">{{ topic.name }}</a>
+                                <a href="{% url 'index' %}?topic={{ topic.name }}" class="list-group-item list-group-item-action">{{ topic.name }}</a>
                             {% endfor %}
                         </div>
                     </div>

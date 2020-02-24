@@ -29,7 +29,7 @@ class Question(models.Model):
     title = models.CharField(max_length=256)
     details = models.CharField(max_length=512, blank=True)
     topics = models.ManyToManyField(Topic)
-    question_type = models.CharField(max_length=256, choices=QUESTION_TYPES, default=QUESTION_TYPES[0][0])
+    type = models.CharField(max_length=256, choices=QUESTION_TYPES, default=QUESTION_TYPES[0][0])
     answers = models.ManyToManyField(Answer, blank=True)
     views = models.PositiveIntegerField(default=1)
     timestamp = models.DateTimeField(auto_now_add=True)

@@ -88,6 +88,20 @@ main {
   padding-bottom: 110px;
 }
 
+#ask_your_question {
+  cursor: pointer;
+  -webkit-transition: .3s;
+  transition: .3s;
+}
+
+#ask_your_question:hover {
+  color: var(--blue);
+}
+
+#ask_form {
+  display: none;
+}
+
 .profile_img_link:hover {
   text-decoration: none;
 }

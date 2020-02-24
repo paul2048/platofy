@@ -60,6 +60,19 @@ main {
   padding-bottom: 110px;
 }
 
+#ask_your_question {
+  cursor: pointer;
+  transition: .3s;
+
+  &:hover {
+    color: var(--blue);
+  }
+}
+
+#ask_form {
+  display: none;
+}
+
 // The "a" tags that have a circle image inside
 .profile_img_link {
   // Remove the underline of the image when you hover over it

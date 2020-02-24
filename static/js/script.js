@@ -14,6 +14,17 @@ window.onload = () => {
         });
     });
 
+    // Slides up/down the "ask_form" when the "h1" is clicked
+    $('#ask_your_question').click(() => {
+        const ask_form = $('#ask_form');
+
+        if (ask_form.css('display') === 'none') {
+            ask_form.slideDown();
+        } else {
+            ask_form.slideUp();
+        }
+    });
+
     // When a upvote or downvote button is clicked
     $('.upvote_btn, .downvote_btn').click((e) => {
         const btn = $(e.target).closest('.upvote_btn, .downvote_btn');
@@ -41,7 +52,7 @@ window.onload = () => {
             btn.siblings('div').removeClass('active_vote');
 
             // Upvote animation
-            if (vote_type == 'upvote' && btn.hasClass('active_vote')) {
+            if (vote_type === 'upvote' && btn.hasClass('active_vote')) {
                 btn.addClass('upvoted');
             }
         });
@@ -60,5 +71,20 @@ window.onload = () => {
         // Display the derired container
         cont.parent().children().addClass('d-none');
         cont.removeClass('d-none');
+
+        // Store the id of the clicked button (used to display the most recent data after reload)
+        localStorage.setItem('recent_profile_btn_id', btn.attr('id'))
     });
+
+    // Get the id of the most recently clicked button in the profile page
+    const recent_profile_btn_id = localStorage.getItem('recent_profile_btn_id');
+    const recent_profile_btn = $(`#${recent_profile_btn_id}`);
+
+    // If the recently clicked button exists, click it
+    if (recent_profile_btn.length) {
+        recent_profile_btn.click();
+    // Else, click the first button in the button group
+    } else {
+        $('#profile_btn_group').children().eq(0).click();
+    }
 };

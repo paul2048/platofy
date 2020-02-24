@@ -9,10 +9,19 @@
 
         <div class="col-12 col-sm-6 m-auto" id="stats_cont">
             <div class="row">
+                <div class="col-12">
+                    <h3>{{ viewed_user.username }}</h3>
+                </div>
                 <div class="col-9 text-muted">Answers made</div>
                 <div class="col-3 text-right">{{ answers.count }}</div>
                 <div class="col-9 text-muted">Questions asked</div>
-                <div class="col-3 text-right">{{ questions.count }}</div>
+                <div class="col-3 text-right">
+                    {% if viewed_user.id == user.id %}
+                        {{ questions.count }}
+                    {% else %}
+                        {{ public_questions.count }}
+                    {% endif %}
+                </div>
                 <div class="col-9 text-muted">Upvotes received</div>
                 <div class="col-3 text-right">{{ upvotes_received }}</div>
                 <div class="col-9 text-muted">Upvotes given</div>
@@ -23,7 +32,7 @@
 
     <div>
         <div class="btn-group" id="profile_btn_group">
-            <button class="btn btn-secondary active" id="my_questions_btn">Questions</button>
+            <button class="btn btn-secondary" id="my_questions_btn">Questions</button>
             <button class="btn btn-secondary" id="my_answers_btn">Answers</button>
             
             {% if viewed_user.id == user.id %}
@@ -34,31 +43,41 @@
 
     <div>
         {% comment %} QUESTIONS {% endcomment %}
-        <div id="my_questions">
+        <div class="d-none" id="my_questions">
             {% for question in questions %}
-                <div class="card bg-light qa_card">
-                    <div class="card-body">
-                        <div class="mb-2">
-                            <a class="profile_img_link" href="{% url 'profile' uid=question.author.id %}">{% avatar question.author 34 class="rounded-circle img-fluid" %}</a>
-                            {{ question.author.username }}
-                            <span class="text-muted">asked:</span>
+                {% comment %} Display the anonymous questions only if you are the logged in user of the visited profile {% endcomment %}
+                {% if user != question.author and question.type == 'public' or user == question.author %}
+                    <div class="card bg-light qa_card">
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <a class="profile_img_link" href="{% url 'profile' uid=question.author.id %}">
+                                    {% avatar question.author 34 class="rounded-circle img-fluid" %}
+                                </a>
+                                {{ question.author.username }}
+                                <span class="text-muted">asked:</span>
+                            </div>
+
+                            <h5 class="card-title">
+                                <a href="{% url 'question' question_id=question.id %}">{{ question.title }}</a>
+                            </h5>
+
+                            <p class="card-text">{{ question.details|truncatewords:50 }}</p>
+
+                            {% comment %} If the question has any answers {% endcomment %}
+                            {% if question.answers.all %}
+                                <a href="{% url 'question' question_id=question.id %}" class="btn btn-primary">See answers</a>
+                            {% else %}
+                                <p class="text-muted font-italic">No answers yet.</p>
+                            {% endif %}
                         </div>
-
-                        <h5 class="card-title">
-                            <a href="{% url 'question' question_id=question.id %}">{{ question.title }}</a>
-                        </h5>
-
-                        <p class="card-text">{{ question.details|truncatewords:50 }}</p>
-
-                        {% comment %} If the question has any answers {% endcomment %}
-                        {% if question.answers.all %}
-                            <a href="{% url 'question' question_id=question.id %}" class="btn btn-primary">See answers</a>
-                        {% else %}
-                            <p class="text-muted font-italic">No answers yet.</p>
-                        {% endif %}
                     </div>
-                </div>
+                {% endif %}
             {% endfor %}
+
+            {% comment %} If the visitor is not the profile owner and the profile owner has no public questions {% endcomment %}
+            {% if user != question.author and public_questions.count == 0 %}
+                <h1 class="text-center text-muted">No questions.</h1>
+            {% endif %}
         </div>
 
         {% comment %} ANSWERS {% endcomment %}
@@ -112,6 +131,8 @@
                         </div>
                     </div>
                 </div>
+            {% empty %}
+                <h1 class="text-center text-muted">No answers.</h1>
             {% endfor %}
         </div>
 

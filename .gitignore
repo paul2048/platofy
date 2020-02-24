@@ -1,5 +1,6 @@
 env
-media/
+media
 db.sqlite3
+qa/migrations
 */__pycache__
 */*/__pycache__
