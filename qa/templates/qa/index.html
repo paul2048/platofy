@@ -1,5 +1,5 @@
 {% extends "qa/layout.html" %}
-{% load static crispy_forms_tags avatar_tags %}
+{% load static humanize crispy_forms_tags avatar_tags %}
 
 {% block main %}
     <div class="mb-3">
@@ -14,7 +14,7 @@
     
     <div>
         {% for question in questions %}
-            <div class="card bg-light qa_card">
+            <div class="card bg-light qa_card" data-id="{{ question.id }}" data-csrftoken="{{ csrf_token }}">
                 <div class="card-body">
                     <div class="mb-2">
                         {% if question.type == 'anonymous' %}
@@ -28,14 +28,14 @@
                             </a>
                             {{ question.author.username }}
                         {% endif %}
-                        <span class="text-muted">asked:</span>
+                        <span class="text-muted">asked {{ question.timestamp|naturaltime }}:</span>
                     </div>
 
                     <h5 class="card-title">
                         <a href="{% url 'question' question_id=question.id %}">{{ question.title }}</a>
                     </h5>
 
-                    <p class="card-text">{{ question.details|truncatewords:50 }}</p>
+                    <pre class="card-text">{{ question.details|truncatewords:50 }}</pre>
 
                     {% comment %} If the question has any answers {% endcomment %}
                     {% if question.answers.all %}

@@ -47,28 +47,49 @@
             {% for question in questions %}
                 {% comment %} Display the anonymous questions only if you are the logged in user of the visited profile {% endcomment %}
                 {% if user != question.author and question.type == 'public' or user == question.author %}
-                    <div class="card bg-light qa_card">
+                    <div class="card bg-light qa_card" data-id="{{ question.id }}" data-csrftoken="{{ csrf_token }}">
                         <div class="card-body">
                             <div class="mb-2">
                                 <a class="profile_img_link" href="{% url 'profile' uid=question.author.id %}">
                                     {% avatar question.author 34 class="rounded-circle img-fluid" %}
                                 </a>
                                 {{ question.author.username }}
-                                <span class="text-muted">asked:</span>
+                                <span class="text-muted">asked {{ question.timestamp|naturaltime }}:</span>
                             </div>
 
                             <h5 class="card-title">
                                 <a href="{% url 'question' question_id=question.id %}">{{ question.title }}</a>
                             </h5>
 
-                            <p class="card-text">{{ question.details|truncatewords:50 }}</p>
+                            <pre class="card-text">{{ question.details|truncatewords:50 }}</pre>
 
                             {% comment %} If the question has any answers {% endcomment %}
-                            {% if question.answers.all %}
-                                <a href="{% url 'question' question_id=question.id %}" class="btn btn-primary">See answers</a>
-                            {% else %}
-                                <p class="text-muted font-italic">No answers yet.</p>
-                            {% endif %}
+                            <p class="text-muted font-italic">
+                                {% if question.answers.all %}
+                                    {{ question.answers.count }} answer(s).
+                                {% else %}
+                                    No answers yet.
+                                {% endif %}
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="text-muted">{{ question.views }} views</div>
+
+                                {% if user.id == question.author.id %}
+                                    <div>
+                                        <button class="btn btn-link text-danger delete_qa" data-toggle="modal" data-target="#delete_qa_modal">Delete</button>
+                                    </div>
+                                {% endif %}
+
+                                <div class="share_cont">
+                                    <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ question.title }}" target="_blank">
+                                        <img src="{% static 'images/twitter_icon.svg' %}">
+                                    </a>
+                                    <a class="ml-3" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank">
+                                        <img src="{% static 'images/facebook_icon.svg' %}">
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 {% endif %}
@@ -83,18 +104,18 @@
         {% comment %} ANSWERS {% endcomment %}
         <div class="d-none" id="my_answers">
             {% for answer in answers %}
-                <div class="card bg-light qa_card" data-id="{{ answer.id }}">
+                <div class="card bg-light qa_card" data-id="{{ answer.id }}" data-csrftoken="{{ csrf_token }}">
                     <div class="card-body">
                         <div class="mb-2">
                             <a class="profile_img_link" href="{% url 'profile' uid=answer.author.id %}">{% avatar answer.author 34 class="rounded-circle img-fluid" %}</a>
                             {{ answer.author.username }}
-                            <span class="text-muted">answered:</span>
+                            <span class="text-muted">answered: {{ question.timestamp|naturaltime }}</span>
                         </div>
 
-                        <p class="card-title">{{ answer.content }}</p>
+                        <pre class="card-title">{{ answer.content }}</pre>
 
                         <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center" data-csrftoken="{{ csrf_token }}">
+                            <div class="d-flex align-items-center">
                                 <div class="upvote_btn {% if user in answer.upvoters.all %}active_vote{% endif %}">
                                     <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                         <g stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round">
@@ -116,11 +137,17 @@
                                 </div>
                             </div>
 
-                            <div>
-                                <a href="#">
+                            {% if user.id == answer.author.id %}
+                                <div>
+                                    <button class="btn btn-link text-danger delete_qa" data-toggle="modal" data-target="#delete_qa_modal">Delete</button>
+                                </div>
+                            {% endif %}
+
+                            <div class="share_cont">
+                                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ answer.content }}" target="_blank">
                                     <img src="{% static 'images/twitter_icon.svg' %}">
                                 </a>
-                                <a class="ml-3" href="#">
+                                <a class="ml-3" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank">
                                     <img src="{% static 'images/facebook_icon.svg' %}">
                                 </a>
                             </div>
@@ -135,8 +162,8 @@
         {% comment %} SETTINGS {% endcomment %}
         {% if viewed_user.id == user.id %}
             <div class="d-none" id="my_settings">
-                <div>
-                    <a href="{% url 'avatar_change' %}">Change your avatar</a>
+                <div class="text-center">
+                    <a class="btn btn-primary" href="{% url 'avatar_change' %}">Change your avatar</a>
                 </div>
             </div>
         {% endif %}

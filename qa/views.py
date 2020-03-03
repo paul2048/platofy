@@ -1,7 +1,8 @@
 from django.contrib.auth import authenticate, login as login_user, logout as logout_user
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Count
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -21,8 +22,6 @@ def index(request):
         ask_form = AskQuestionForm(request.POST)
 
         if ask_form.is_valid():
-            # Get the user that is logged in
-            user = User.objects.get(id=request.user.id)
             form_data = ask_form.cleaned_data
 
             # Convert the string '[{"value":"a"},{"value":"B"},{"value":"b"}]' to {'A', 'B'}
@@ -43,10 +42,10 @@ def index(request):
 
             # Create the question submitted by the user
             question = Question.objects.create(
-                author=user,
+                author=request.user,
                 title=form_data['title'],
                 details=form_data['details'],
-                question_type=form_data['question_type']
+                type=form_data['question_type']
             )
             
             # Link the selected topics to the question
@@ -58,8 +57,12 @@ def index(request):
     else:
         ask_form = AskQuestionForm()
     
-    # Get the every questions except for those asked by the user
-    questions = Question.objects.exclude(author=request.user)
+    # If the user is logged in, get the every question except for those asked by the user
+    if request.user.is_authenticated:
+        questions = Question.objects.exclude(author=request.user)
+    # else get every question
+    else:
+        questions =  Question.objects.all()
     # Get the name of the topic from the URL's query string
     topic_name = request.GET.get("topic")
 
@@ -84,7 +87,11 @@ def index(request):
 
 def profile(request, uid):
     """ Renders the a specified user's profile """
-    user = User.objects.get(id=uid)
+    try:
+        user = User.objects.get(id=uid)
+    except User.DoesNotExist:
+        raise Http404(f'A user with the id {uid} does not exist.')
+    
     questions = Question.objects.filter(author=user)
     answers = Answer.objects.filter(author=user)
     # Questions asked, excluing the anonymous questions
@@ -107,7 +114,11 @@ def profile(request, uid):
 
 def question(request, question_id):
     """ Renders question pages and handles question answerings """
-    question = Question.objects.get(id=question_id)
+    try:
+        question = Question.objects.get(id=question_id)
+    except Question.DoesNotExist:
+        raise Http404(f'A question with the id {question_id} does not exist.')
+
     answer_form = AnswerQuestionForm()
     answers_authors = [answer.author for answer in question.answers.all()]
     can_answer = request.user.is_authenticated and question.author.id != request.user.id and request.user not in answers_authors
@@ -122,14 +133,13 @@ def question(request, question_id):
 
         if answer_form.is_valid():
             content = answer_form.cleaned_data['content']
-            # Get the user that is logged in
-            user = User.objects.get(id=request.user.id)
+            user = request.user
             # Clear the form
             answer_form = AnswerQuestionForm()
             # Create the answer submitted by the user
             answer = Answer.objects.create(author=user, content=content)
             # Automatically upvotes the user's own answer
-            answer.upvoters.add(request.user)
+            answer.upvoters.add(user)
             # Add the answer to the "list" of answers of the questions
             question.answers.add(answer)
     else:
@@ -148,13 +158,19 @@ def question(request, question_id):
         }
     )
 
+@login_required
 def vote(request):
-    """ Answer upvote and downvote feature """
-    uid = request.POST.get('user_id')
+    """ Upvote and downvote answers feature """
     answer_id = request.POST.get('answer_id')
     vote_type = request.POST.get('vote_type')
-    user = User.objects.get(id=uid)
-    answer = Answer.objects.get(id=answer_id)
+    user = request.user
+
+    # Makes sure the answer to be voted, still exists
+    try:
+        answer = Answer.objects.get(id=answer_id)
+    except Answer.DoesNotExist:
+        raise Http404('The answer you\'ve tried to vote, no longer exists.')
+    
     upvoters = answer.upvoters
     downvoters = answer.downvoters
 
@@ -178,6 +194,32 @@ def vote(request):
     return HttpResponse(json.dumps({
         'new_points': upvoters.count() - downvoters.count()
     }))
+
+@login_required
+def delete_qa(request):
+    qa_id = request.POST.get('qa_id')
+    is_question = request.POST.get('is_question')
+    status = {'success': True}
+
+    # If the user tried to delete a question
+    if is_question == 'true':
+        try:
+            question = Question.objects.get(id=qa_id)
+
+            # Delete the answers of the question
+            for answer in question.answers.all():
+                answer.delete()
+            # Delete the question
+            question.delete()
+        except Question.DoesNotExist:
+            status['success'] = False
+    else:
+        try:
+            Answer.objects.get(id=qa_id).delete()
+        except Answer.DoesNotExist:
+            status['success'] = False
+    
+    return HttpResponse(json.dumps(status))
 
 def login(request):
     """ Logs the user in """
@@ -225,6 +267,7 @@ def register(request):
 
     return render(request, 'qa/register.html', context={'form': form})
 
+@login_required
 def logout(request):
     """ Signs the user out """
     logout_user(request)

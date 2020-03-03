@@ -143,7 +143,7 @@ class AnswerQuestionForm(forms.Form):
     def clean_content(self):
         content = self.cleaned_data['content']
 
-        if not content:
-            raise forms.ValidationError('The answer is not valid.')
+        if len(content) < 6:
+            raise forms.ValidationError('The answer is to short.')
 
         return content
