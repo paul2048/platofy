@@ -44,7 +44,7 @@ The valid URLs live in this file. For example, `path('profile/<int:uid>/', views
 This file has the purpose of storing helper functions. The helper function in `utils.py` is `question_format`, a function that takes the title of the question that the user submitted through the question asking form and returns a formatted version of the title. For example, the title `How tall   is Everest  ?  ` would become `How tall is Everest?`.
 
 ### qa/views.py
-
+This Python script contains all the view functions. For example, a `GET` request to `/` will run the `index` function, which will render the homepage. On the other hand, a `POST` request will handle the question asking form. 
 
 ### qa/api/*
 These files form the api.
