@@ -38,9 +38,62 @@ Some of the tests included in this script are:
 - testing that the a 404 error is returned after a profile of a non-existent user was tried to be accessed
 
 ### qa/urls.py
-The valid URLs live in this file. For example, the 
-    `path('profile/<int:uid>/', views.profile, name='profile')` line specifies that 
+The valid URLs live in this file. For example, `path('profile/<int:uid>/', views.profile, name='profile')` specifies that the user can access the path "profile/`the id of the user`/".
 
 ### qa/utils.py
+This file has the purpose of storing helper functions. The helper function in `utils.py` is `question_format`, a function that takes the title of the question that the user submitted through the question asking form and returns a formatted version of the title. For example, the title `How tall   is Everest  ?  ` would become `How tall is Everest?`.
 
 ### qa/views.py
+
+
+### qa/api/*
+These files form the api.
+
+### qa/templates/*
+These are the templates of Platofy. Each template excluding `layout.html` is built on `layout.html`. `index.html` is the homepage, which contains the question asking form, the question [cards](https://getbootstrap.com/docs/4.4/components/card/) and a list with the top topics.
+
+### static/css/style.scss
+The code inside this SASS file is compiled to `style.css`, the CSS file that contains general styling.
+
+### static/css/tagify.css
+This is the styling for the question tags and it's part of the [Tagify](https://github.com/yairEO/tagify) library.
+
+### static/js/scripts.js
+This JS file includes AJAX requests, for instance
+```javascript
+$.post('/vote/', data_to_send, (resp) => {
+    // If a html page (of the login page) was returned
+    try {
+        resp = JSON.parse(resp);
+    } catch (e) {
+        show_alert('You must me logged in to vote answers.');
+        return;
+    }
+    const btns_cont = btn.parent();
+
+    // Update the new number of points
+    btns_cont.find('.points').text(resp.new_points);
+
+    // Color/Uncolor the correct button
+    btn.toggleClass('active_vote');
+    btn.siblings('div').removeClass('active_vote');
+
+    // Upvote animation
+    if (vote_type === 'upvote' && btn.hasClass('active_vote')) {
+        btn.addClass('upvoted');
+    }
+}
+```
+makes a `POST` request to `/vote/` and the user is added/removed from the upvoters/downvoters list.  
+This script also has click events, for example
+```javascript
+$('#ask_your_question').click(() => {
+    $('#ask_form').slideToggle();
+    // Negate the value of 'open_ask_form'
+    localStorage.setItem('open_ask_form', !JSON.parse(localStorage.getItem('open_ask_form')));
+});
+```
+slides down/up the question asking form.
+
+### static/js/tagify.min.js
+This is the JS of the [Tagify](https://github.com/yairEO/tagify) library.
