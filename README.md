@@ -23,3 +23,24 @@ The functions defined in this script will be callable in the Django templates.
 `top_topics` is a functions that returns the top `n` topics from the database based on the number of times the topic has been used.
 
 ### qa/forms.py
+Every form on Platofy is made with the help of `forms.py` (i.e the login form, the question asking form)  
+To render the question asking form to the page, you must import `AskQuestionForm` in `views.py` and give it as context.  
+
+### qa/models.py
+This file contains the `Answer`, `Question` and `Topic` modeles.
+
+### qa/tests.py
+The purpose of this file is to run a set of tests when the `python3 manage.py test` command is executed.  
+In the `setUp` method, we define the variables that are needed for the tests.  
+Some of the tests included in this script are:
+- testing that the number of upvoters is correct after performing some upvotes
+- testing that a question is valid (i.e it has at least 2 words)
+- testing that the a 404 error is returned after a profile of a non-existent user was tried to be accessed
+
+### qa/urls.py
+The valid URLs live in this file. For example, the 
+    `path('profile/<int:uid>/', views.profile, name='profile')` line specifies that 
+
+### qa/utils.py
+
+### qa/views.py
