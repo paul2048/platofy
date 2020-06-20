@@ -25,7 +25,7 @@
                 
                 <div class="tagify mb-2" id="question_topics">
                     {% for topic in question.topics.all %}
-                        <a href="{% url 'index' %}">
+                        <a href="{% url 'index' %}?topic={{ topic.name }}">
                             <div class="tagify__tag ">
                                 <div>
                                     <span>{{ topic.name }}</span>
