@@ -5,7 +5,7 @@ django-avatar==5.0.0
 django-crispy-forms==1.9.0
 django-mathfilters==1.0.0
 djangorestframework==3.11.0
-Pillow==8.1.1
+Pillow==9.0.0
 pkg-resources==0.0.0
 pytz==2019.3
 six==1.14.0
